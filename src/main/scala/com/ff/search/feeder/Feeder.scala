@@ -5,7 +5,7 @@ import com.ff.search.error.{AppError, ErrorOr}
 import fs2.{Pipe, Stream}
 import io.circe.Json
 
-class Feeder[F[_]: Sync, +A, +B](
+class Feeder[F[_]: Sync, A, B](
   extract: String => Stream[F, Byte],
   parse: Pipe[F, Byte, Json],
   decode: Json => ErrorOr[A],

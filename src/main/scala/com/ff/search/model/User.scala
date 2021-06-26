@@ -13,6 +13,6 @@ object User {
       id <- c.get[UserId]("_id")
       createdAt <- c.get[OffsetDateTime]("created_at")
       username <- c.get[Username]("name")
-      verified <- c.get[Boolean]("verified")
-    } yield User(id, username, createdAt, verified)
+      verified <- c.get[Option[Boolean]]("verified")
+    } yield User(id, username, createdAt, verified.getOrElse(false))
 }

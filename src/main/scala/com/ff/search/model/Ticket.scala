@@ -9,7 +9,7 @@ final case class Ticket(
   createdAt: OffsetDateTime,
   incidentType: IncidentType,
   subject: Subject,
-  assignee: UserId,
+  assignee: Option[UserId],
   tags: Vector[Tag]
 )
 
@@ -19,9 +19,9 @@ object Ticket {
     for {
       id <- c.get[TicketId]("_id")
       createdAt <- c.get[OffsetDateTime]("created_at")
-      incidentType <- c.get[IncidentType]("type")
+      incidentType <- c.get[Option[IncidentType]]("type")
       subject <- c.get[Subject]("subject")
-      assignee <- c.get[UserId]("assignee_id")
+      assignee <- c.get[Option[UserId]]("assignee_id")
       tags <- c.get[Vector[Tag]]("tags")
-    } yield Ticket(id, createdAt, incidentType, subject, assignee, tags)
+    } yield Ticket(id, createdAt, incidentType.getOrElse(IncidentType.Other), subject, assignee, tags)
 }

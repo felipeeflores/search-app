@@ -1,6 +1,6 @@
 package com.ff.search.model
 
-import io.circe.{Decoder, DecodingFailure}
+import io.circe.Decoder
 
 sealed trait IncidentType extends Product with Serializable
 
@@ -9,6 +9,7 @@ object IncidentType {
   case object Problem extends IncidentType
   case object Question extends IncidentType
   case object Task extends IncidentType
+  case object Other extends IncidentType
 
   implicit val incidentTypeDecoder: Decoder[IncidentType] = c =>
     c.as[String].flatMap {
@@ -16,6 +17,6 @@ object IncidentType {
       case "problem" => Right(Problem)
       case "question" => Right(Question)
       case "task" => Right(Task)
-      case other => Left(DecodingFailure(s"Invalid incident type $other", List.empty))
+      case other => Right(Other)
     }
 }
