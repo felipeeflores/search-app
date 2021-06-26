@@ -15,6 +15,8 @@ libraryDependencies ++= Seq(
   "org.typelevel"   %%    "cats-effect"             % catsEffectVersion,
   "co.fs2"          %%    "fs2-core"                % fs2Version,
   "co.fs2"          %%    "fs2-io"                  % fs2Version,
+  "io.circe"        %%    "circe-core"              % circeVersion,
+  "io.circe"        %%    "circe-generic"           % circeVersion,
   "io.circe"        %%    "circe-literal"           % circeVersion,
   "io.circe"        %%    "circe-fs2"               % circeFs2Version,
   "org.typelevel"   %%    "cats-effect-laws"        % catsEffectVersion   % Test,

@@ -58,7 +58,7 @@ class FeederTest extends Specification with IOMatchers {
           val decoded = for {
             int <- json.hcursor.get[Int]("_id")
           } yield int
-          decoded.left.map(_ => InvalidRecord(json.noSpaces))
+          decoded.left.map(_ => InvalidRecord(json, "fail"))
         }
         val feeder = new Feeder[IO, Int, Int](
           extract = extractData,
@@ -82,7 +82,7 @@ class FeederTest extends Specification with IOMatchers {
           val decoded = for {
             int <- json.hcursor.get[Int]("_id")
           } yield int
-          decoded.left.map(_ => InvalidRecord(json.noSpaces))
+          decoded.left.map(_ => InvalidRecord(json, "fail"))
         }
         val feeder = new Feeder[IO, Int, String](
           extract = extractData,
@@ -107,7 +107,7 @@ class FeederTest extends Specification with IOMatchers {
             int <- json.hcursor.get[Int]("_id")
             value <- if (int == 2) Left(DecodingFailure("foo", List.empty)) else Right(int)
           } yield value
-          decoded.left.map(_ => InvalidRecord(json.noSpaces))
+          decoded.left.map(_ => InvalidRecord(json, "fail"))
         }
         val feeder = new Feeder[IO, Int, Int](
           extract = extractData,
@@ -132,7 +132,7 @@ class FeederTest extends Specification with IOMatchers {
             int <- json.hcursor.get[Int]("_id")
             value <- if (int == 2) Left(DecodingFailure("foo", List.empty)) else Right(int)
           } yield value
-          decoded.left.map(_ => InvalidRecord(json.noSpaces))
+          decoded.left.map(_ => InvalidRecord(json, "fail"))
         }
         val feeder = new Feeder[IO, Int, Int](
           extract = extractData,
@@ -144,8 +144,8 @@ class FeederTest extends Specification with IOMatchers {
         )
         feeder.feed("foo") *> ref.get
       }
-
-      val expectedErrors = Vector(InvalidRecord("""{"_id":2}"""))
+      val rawJson = Json.obj("_id" -> 2.asJson)
+      val expectedErrors = Vector(InvalidRecord(rawJson, "fail"))
 
       loadedErrors must returnValue(expectedErrors)
     }
