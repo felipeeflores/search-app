@@ -1,7 +1,7 @@
 package com.ff.search.feeder
 
 import com.ff.search.model.IncidentType.Incident
-import com.ff.search.model.{Subject, Tag, Ticket, TicketId, User, UserId, Username}
+import com.ff.search.model._
 import io.circe.literal.JsonStringContext
 import org.specs2.mutable.Specification
 
@@ -49,7 +49,7 @@ class DecodeTest extends Specification {
         createdAt = OffsetDateTime.parse("2016-04-28T11:19:34-10:00"),
         incidentType = Incident,
         subject = Subject("A very important subject."),
-        assignee = UserId(24),
+        assignee = Some(UserId(24)),
         tags = Vector(
           Tag("Tag"),
           Tag("Another tag")
