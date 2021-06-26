@@ -22,7 +22,7 @@ class FeederTest extends Specification with IOMatchers {
           ]
           """
 
-  "FeederTest" should {
+  "Feeder" should {
     "extract raw data" in {
       val extractedValues = Ref.of[IO, List[Json]](List.empty).flatMap { ref =>
         def parseExtractedData: Pipe[IO, Byte, Json] = input => {

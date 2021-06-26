@@ -23,6 +23,5 @@ class Feeder[F[_]: Sync, +A, +B](
       }
       .compile
       .drain
-
   }
 }
