@@ -9,6 +9,10 @@ import com.ff.search.index.{IndexManager, TicketIndex, UserIndex}
 import com.ff.search.model.{Ticket, User}
 import io.circe.fs2.byteArrayParser
 
+/*
+ Class to glue together all the individual production components.
+ Better DI: Passing and type checking all the arguments/parameters at compile time.
+ */
 final case class DI(userIndexRef: Ref[IO, UserIndex], ticketIndexRef: Ref[IO, TicketIndex]) {
   private val userIndexManager = new IndexManager[IO, UserDocument, User](userIndexRef)
   private val ticketIndexManager = new IndexManager[IO, TicketDocument, Ticket](ticketIndexRef)

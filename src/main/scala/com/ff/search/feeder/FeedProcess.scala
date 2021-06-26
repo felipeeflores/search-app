@@ -1,18 +1,35 @@
 package com.ff.search.feeder
 
 import cats.effect.IO
+import com.ff.search.error.AppError
+import cats.syntax.show._
+import com.ff.search.error.AppError.UnexpectedError
 
 class FeedProcess(
   feedUserIndex: String => IO[Unit],
   feedTicketIndex: String => IO[Unit]
 ) {
   def run(config: Config): IO[Unit] = {
-    for {
+    val process = for {
       _ <- IO(println("Loading user data"))
       _ <- feedUserIndex(config.usersFile)
       _ <- IO(println("Now loading ticket data"))
       _ <- feedTicketIndex(config.ticketsFile)
       _ <- IO(println("Data loaded successfully...\n"))
     } yield ()
+
+    process.handleErrorWith(throwable => {
+      val appError = throwable match {
+        case appError: AppError =>
+          IO(println(s"Failed feeding with AppError: ${appError.show}.\nAborting...")).map(_ => appError)
+        case _ =>
+          for {
+            _ <- IO(println(s"Failed feeding with unexpected error: ${throwable.getMessage}"))
+            _ <- if (config.verboseErrors) IO(throwable.printStackTrace()) else IO.unit
+            _ <- IO(println("\nAborting..."))
+          } yield UnexpectedError("Feeding data", throwable)
+      }
+      appError.flatMap(IO.raiseError(_))
+    })
   }
 }

@@ -17,6 +17,6 @@ object IncidentType {
       case "problem" => Right(Problem)
       case "question" => Right(Question)
       case "task" => Right(Task)
-      case other => Right(Other)
+      case _ => Right(Other)
     }
 }
