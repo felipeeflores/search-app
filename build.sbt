@@ -3,19 +3,23 @@ name := "search-app"
 scalaVersion := "2.13.6"
 
 val monixVersion = "3.4.0"
+val fs2Version = "3.0.4"
+val catsEffectVersion = "3.1.1"
 val circeVersion = "0.14.1"
-val catsEffectVersion = "2.5.1"
+val circeFs2Version = "0.14.0"
 val specs2Version = "4.12.2"
 
 mainClass := Some("com.ff.search.App")
 
 libraryDependencies ++= Seq(
-  "io.monix"                        %%  "monix"                             % monixVersion,
-  "io.circe"                        %%  "circe-literal"                     % circeVersion,
-  "org.typelevel"                   %%  "cats-effect-laws"                  % catsEffectVersion, // Brings test EC
-  "org.specs2"                      %%  "specs2-core"                       % specs2Version                 % Test,
-  "org.specs2"                      %%  "specs2-cats"                       % specs2Version                 % Test,
-  "org.specs2"                      %%  "specs2-matcher-extra"              % specs2Version                 % Test
+  "org.typelevel"   %%    "cats-effect"             % catsEffectVersion,
+  "co.fs2"          %%    "fs2-core"                % fs2Version,
+  "io.circe"        %%    "circe-literal"           % circeVersion,
+  "io.circe"        %%    "circe-fs2"               % circeFs2Version,
+  "org.typelevel"   %%    "cats-effect-laws"        % catsEffectVersion   % Test,
+  "org.specs2"      %%    "specs2-core"             % specs2Version       % Test,
+  "org.specs2"      %%    "specs2-cats"             % specs2Version       % Test,
+  "org.specs2"      %%    "specs2-matcher-extra"    % specs2Version       % Test
 )
 
 scalacOptions ++= Seq(
