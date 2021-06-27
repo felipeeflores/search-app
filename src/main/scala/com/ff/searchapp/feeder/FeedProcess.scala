@@ -21,15 +21,14 @@ class FeedProcess(
     process.handleErrorWith(throwable => {
       val appError = throwable match {
         case appError: AppError =>
-          IO(println(s"Failed feeding with AppError: ${appError.show}.\nAborting...")).map(_ => appError)
+          IO(println(s"Failed feeding with AppError: ${appError.show}.")).map(_ => appError)
         case _ =>
           for {
             _ <- IO(println(s"Failed feeding with unexpected error: ${throwable.getMessage}"))
             _ <- if (config.verboseErrors) IO(throwable.printStackTrace()) else IO.unit
-            _ <- IO(println("\nAborting..."))
           } yield UnexpectedError("Feeding data", throwable)
       }
-      appError.flatMap(IO.raiseError(_))
+      IO(println("\nAborting...")) >> appError.flatMap(IO.raiseError(_))
     })
   }
 }
