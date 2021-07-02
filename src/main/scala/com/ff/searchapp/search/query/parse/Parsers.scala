@@ -2,7 +2,7 @@ package com.ff.searchapp.search.query.parse
 
 import atto.Atto._
 import atto._
-import com.ff.searchapp.search.query.Filter.{OptionalField, TextFilter}
+import com.ff.searchapp.search.query.Filter.{BooleanFilter, IntFilter, OptionalField, TextFilter}
 import com.ff.searchapp.search.query.Operator.{EQUALS, LIKE}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, SearchTarget}
@@ -41,4 +41,24 @@ object Parsers {
   } yield OptionalField(fieldName, operator, filterValue)
 
   val commaSeparatedValueParser: Parser[String] = many(noneOf(",[]")).map(_.mkString) <~ opt(whitespace) <~ opt(char(',')) <~ opt(whitespace)
+
+  private val booleanParser = string("true").map(_ => true) | string("false").map(_ => false)
+
+  def intFieldParser(fieldNameParser: Parser[String]): Parser[IntFilter] = for {
+    _ <- skipWhitespace
+    fieldName <- fieldNameParser
+    _ <- equalsParser
+    operator <- operatorParser
+    value <- int
+    _ <- opt(operatorParser)
+  } yield IntFilter(fieldName, operator, value)
+
+  def booleanFieldParser(fieldNameParser: Parser[String]): Parser[BooleanFilter] = for {
+    _ <- skipWhitespace
+    fieldName <- fieldNameParser
+    _ <- equalsParser
+    operator <- operatorParser
+    booleanValue <- booleanParser
+    _ <- opt(operatorParser)
+  } yield BooleanFilter(fieldName, operator, booleanValue)
 }

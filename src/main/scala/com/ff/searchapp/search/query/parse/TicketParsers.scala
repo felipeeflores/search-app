@@ -6,13 +6,13 @@ import cats.Alternative
 import com.ff.searchapp.model.IncidentType
 import com.ff.searchapp.model.IncidentType.{Incident, Other, Problem, Question, Task}
 import com.ff.searchapp.search.query.Filter.{MultipleTextField, OptionalField, SumTypeFilter}
-import com.ff.searchapp.search.query.Operator
+import com.ff.searchapp.search.query.{Filter, Operator}
 import com.ff.searchapp.search.query.Operator.EQUALS
 import com.ff.searchapp.search.query.parse.Parsers._
 
 object TicketParsers {
 
-  val ticketTextFieldNameParser: Parser[String] = string("id") | string("subject")
+  private val ticketTextFieldNameParser: Parser[String] = string("id") | string("subject")
 
   private val assigneeFieldNameParser = string("assignee")
 
@@ -34,7 +34,7 @@ object TicketParsers {
       string("task").map(_ => Task) |
       Alternative[Parser].pure(Other)
 
-  val incidentTypeFilterParser: Parser[SumTypeFilter[IncidentType]] = for {
+  private val incidentTypeFilterParser: Parser[SumTypeFilter[IncidentType]] = for {
     _ <- skipWhitespace
     _ <- string("type")
     _ <- equalsParser
@@ -42,8 +42,10 @@ object TicketParsers {
     incidentType <- incidentTypeParser
   } yield SumTypeFilter("incidentType", operator, incidentType)
 
-  val assigneeParser: Parser[OptionalField] = nullValueOptionalFieldParser(assigneeFieldNameParser) | unassignedParser
+  private val assigneeParser: Parser[OptionalField] =
+    nullValueOptionalFieldParser(assigneeFieldNameParser) | unassignedParser
 
+  //TODO: complete this parser
   val tagsParser: Parser[MultipleTextField] = for {
     _ <- skipWhitespace
     fieldName <- tagsFieldNameParser
@@ -52,4 +54,9 @@ object TicketParsers {
     values <- many(commaSeparatedValueParser)
     _ <- char(']')
   } yield MultipleTextField(fieldName, Operator.IN, values.toVector)
+
+  private val oneTicketQueryFilterParser: Parser[Filter] =
+    textFieldParser(ticketTextFieldNameParser) | incidentTypeFilterParser | assigneeParser
+
+  val ticketQueryFiltersParser: Parser[Vector[Filter]] = many(oneTicketQueryFilterParser).map(_.toVector)
 }

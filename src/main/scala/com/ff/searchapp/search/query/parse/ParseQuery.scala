@@ -6,9 +6,11 @@ import cats.Alternative
 import cats.syntax.all._
 import com.ff.searchapp.error.AppError.UnexpectedError
 import com.ff.searchapp.error.ErrorOr
-import com.ff.searchapp.search.query.Query
+import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.parse.Parsers._
-import com.ff.searchapp.search.query.parse.TicketParsers._
+import com.ff.searchapp.search.query.parse.TicketParsers.ticketQueryFiltersParser
+import com.ff.searchapp.search.query.parse.UserParsers.userQueryFiltersParser
+import com.ff.searchapp.search.query.{Filter, Query, SearchTarget}
 
 import java.util.Locale
 
@@ -23,18 +25,16 @@ object ParseQuery {
       .leftMap(_ => UnexpectedError(rawQuery, new RuntimeException("boom")))
   }
 
-  private val filterParser =
-    textFieldParser(ticketTextFieldNameParser) |
-      incidentTypeFilterParser |
-      assigneeParser
-
-  private val filtersParser =
-    many(filterParser).map(_.toVector) |
-      Alternative[Parser].pure(Vector.empty)
-
-  private val parseQuery = for {
+  private def parseQuery: Parser[Query] = for {
     searchTarget <- searchTargetParser
-    filters <- filtersParser
+    filters <- filtersParser(searchTarget)
   } yield Query(searchTarget, filters)
 
+  private def filtersParser(searchTarget: SearchTarget): Parser[Vector[Filter]] = {
+    val filtersParser = searchTarget match {
+      case TicketSearch => ticketQueryFiltersParser
+      case UserSearch => userQueryFiltersParser
+    }
+    filtersParser | Alternative[Parser].pure(Vector.empty)
+  }
 }
