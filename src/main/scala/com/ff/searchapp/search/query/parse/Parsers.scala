@@ -2,7 +2,8 @@ package com.ff.searchapp.search.query.parse
 
 import atto.Atto._
 import atto._
-import com.ff.searchapp.search.query.Filter.{BooleanFilter, IntFilter, OptionalField, TextFilter}
+import cats.Alternative
+import com.ff.searchapp.search.query.Filter.{BooleanFilter, IntFilter, OptionalIntField, TextFilter}
 import com.ff.searchapp.search.query.Operator.{EQUALS, LIKE}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, SearchTarget}
@@ -28,19 +29,17 @@ object Parsers {
     _ <- opt(operatorParser)
   } yield TextFilter(fieldName, operator, filterValue)
 
-  def nullValueOptionalFieldParser(fieldNameParser: Parser[String]): Parser[OptionalField] = for {
+  def nullValueOptionalIntFieldParser(fieldNameParser: Parser[String]): Parser[OptionalIntField] = for {
     _ <- skipWhitespace
     fieldName <- fieldNameParser
     _ <- equalsParser
     operator <- operatorParser
-    filterValue <- opt(wordParser).map {
-      case Some("null") => None
-      case other => other
-    }
+    filterValue <- opt(int) | Alternative[Parser].pure(None)
     _ <- opt(operatorParser)
-  } yield OptionalField(fieldName, operator, filterValue)
+  } yield OptionalIntField(fieldName, operator, filterValue)
 
-  val commaSeparatedValueParser: Parser[String] = many(noneOf(",[]")).map(_.mkString) <~ opt(whitespace) <~ opt(char(',')) <~ opt(whitespace)
+  val commaSeparatedValueParser: Parser[String] =
+    many(noneOf(",[]")).map(_.mkString) <~ opt(whitespace) <~ opt(char(',')) <~ opt(whitespace)
 
   private val booleanParser = string("true").map(_ => true) | string("false").map(_ => false)
 

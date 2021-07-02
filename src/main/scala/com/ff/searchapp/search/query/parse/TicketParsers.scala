@@ -5,7 +5,7 @@ import atto._
 import cats.Alternative
 import com.ff.searchapp.model.IncidentType
 import com.ff.searchapp.model.IncidentType.{Incident, Other, Problem, Question, Task}
-import com.ff.searchapp.search.query.Filter.{MultipleTextField, OptionalField, SumTypeFilter}
+import com.ff.searchapp.search.query.Filter.{IncidentTypeField, MultipleTextField, OptionalIntField}
 import com.ff.searchapp.search.query.{Filter, Operator}
 import com.ff.searchapp.search.query.Operator.EQUALS
 import com.ff.searchapp.search.query.parse.Parsers._
@@ -21,7 +21,7 @@ object TicketParsers {
   private val unassignedParser = for {
     _ <- skipWhitespace
     _ <- string("unassigned")
-  } yield OptionalField(
+  } yield OptionalIntField(
     fieldName = "assignee",
     operator = EQUALS,
     value = None
@@ -34,16 +34,16 @@ object TicketParsers {
       string("task").map(_ => Task) |
       Alternative[Parser].pure(Other)
 
-  private val incidentTypeFilterParser: Parser[SumTypeFilter[IncidentType]] = for {
+  private val incidentTypeFilterParser: Parser[IncidentTypeField] = for {
     _ <- skipWhitespace
     _ <- string("type")
     _ <- equalsParser
     operator <- operatorParser
     incidentType <- incidentTypeParser
-  } yield SumTypeFilter("incidentType", operator, incidentType)
+  } yield IncidentTypeField("incidentType", operator, incidentType)
 
-  private val assigneeParser: Parser[OptionalField] =
-    nullValueOptionalFieldParser(assigneeFieldNameParser) | unassignedParser
+  private val assigneeParser: Parser[OptionalIntField] =
+    nullValueOptionalIntFieldParser(assigneeFieldNameParser) | unassignedParser
 
   //TODO: complete this parser
   val tagsParser: Parser[MultipleTextField] = for {
