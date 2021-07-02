@@ -20,10 +20,8 @@ libraryDependencies ++= Seq(
   "io.circe"        %%    "circe-generic"           % circeVersion,
   "io.circe"        %%    "circe-literal"           % circeVersion,
   "io.circe"        %%    "circe-fs2"               % circeFs2Version,
-  "com.lihaoyi"     %%    "fastparse"               % "2.2.2",
   "org.tpolecat"    %%    "atto-core"               % attoVersion,
   "org.tpolecat"    %%    "atto-refined"            % attoVersion,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.0.0",
   "org.typelevel"   %%    "cats-effect-laws"        % catsEffectVersion   % Test,
   "org.specs2"      %%    "specs2-core"             % specs2Version       % Test,
   "org.specs2"      %%    "specs2-cats"             % specs2Version       % Test,
@@ -68,5 +66,5 @@ initialCommands := (List(
     "cats.syntax.all._",
     "scala.concurrent.duration._",
     "atto._",
-    "Atto._"
+    "atto.Atto._"
   )).mkString("import ", ", ", "")
