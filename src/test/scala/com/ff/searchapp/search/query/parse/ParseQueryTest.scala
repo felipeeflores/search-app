@@ -1,6 +1,7 @@
 package com.ff.searchapp.search.query.parse
 
 import cats.syntax.all._
+import com.ff.searchapp.error.AppError.InvalidSearchQuery
 import com.ff.searchapp.search.query.{Filter, Query}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import org.specs2.mutable.Specification
@@ -39,6 +40,14 @@ class ParseQueryTest extends Specification {
       "ignore invalid filters" in {
         ParseQuery("from:tickets unit==ict").map(_.filters) must beRight(Vector.empty[Filter])
       }
+    }
+
+    "handle invalid queries" in {
+      val expectedError = InvalidSearchQuery(
+        rawQuery = "from:entities id==fail",
+        errorHint = """Failure reading:string("from:tickets")"""
+      )
+      ParseQuery("from:entities id==fail") must beLeft(expectedError)
     }
   }
 }
