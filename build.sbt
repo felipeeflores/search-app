@@ -8,6 +8,7 @@ val catsEffectVersion = "3.1.1"
 val circeVersion = "0.14.1"
 val circeFs2Version = "0.14.0"
 val specs2Version = "4.12.2"
+val attoVersion = "0.9.5"
 
 mainClass := Some("com.ff.search.App")
 
@@ -19,6 +20,10 @@ libraryDependencies ++= Seq(
   "io.circe"        %%    "circe-generic"           % circeVersion,
   "io.circe"        %%    "circe-literal"           % circeVersion,
   "io.circe"        %%    "circe-fs2"               % circeFs2Version,
+  "com.lihaoyi"     %%    "fastparse"               % "2.2.2",
+  "org.tpolecat"    %%    "atto-core"               % attoVersion,
+  "org.tpolecat"    %%    "atto-refined"            % attoVersion,
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.0.0",
   "org.typelevel"   %%    "cats-effect-laws"        % catsEffectVersion   % Test,
   "org.specs2"      %%    "specs2-core"             % specs2Version       % Test,
   "org.specs2"      %%    "specs2-cats"             % specs2Version       % Test,
@@ -62,7 +67,6 @@ initialCommands := (List(
     "cats.effect._",
     "cats.syntax.all._",
     "scala.concurrent.duration._",
-    "monix.execution.Scheduler.Implicits.global",
-    "monix.eval._",
-    "monix.reactive._"
+    "atto._",
+    "Atto._"
   )).mkString("import ", ", ", "")
