@@ -21,7 +21,6 @@ class TransformToUserDocumentTest extends Specification {
       TransformToUserDocument(aUser) must beEqualTo(
         UserDocument(
           id = DocumentId("1"),
-          name = "John Kaine",
           data = aUser
         )
       )

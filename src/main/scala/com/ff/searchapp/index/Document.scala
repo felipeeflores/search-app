@@ -1,6 +1,6 @@
 package com.ff.searchapp.index
 
-import com.ff.searchapp.model.{IncidentType, Ticket, User}
+import com.ff.searchapp.model.{Ticket, User}
 
 sealed trait Document[+A] extends Product with Serializable {
   val id: DocumentId
@@ -9,13 +9,9 @@ sealed trait Document[+A] extends Product with Serializable {
 
 object Document {
 
-  final case class UserDocument(id: DocumentId, name: String, data: User) extends Document[User]
+  final case class UserDocument(id: DocumentId, data: User) extends Document[User]
   final case class TicketDocument(
     id: DocumentId,
-    incidentType: IncidentType,
-    subject: String,
-    assignee: Option[Int],
-    tags: String,
     data: Ticket
   ) extends Document[Ticket]
 }

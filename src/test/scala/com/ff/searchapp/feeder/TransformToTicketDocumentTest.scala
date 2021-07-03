@@ -23,10 +23,6 @@ class TransformToTicketDocumentTest extends Specification {
       TransformToTicketDocument(aTicket) must beEqualTo(
         TicketDocument(
           id = DocumentId("123-456"),
-          incidentType = IncidentType.Task,
-          subject = "Urgent, please fix.",
-          assignee = Some(7),
-          tags = "eTech,Mail",
           data = aTicket
         )
       )

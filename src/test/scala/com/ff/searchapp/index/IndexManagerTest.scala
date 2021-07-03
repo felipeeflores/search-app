@@ -19,12 +19,10 @@ class IndexManagerTest extends Specification with IOMatchers {
         Stream
           .range(start = 0, stopExclusive = 1000)
           .map { i =>
-            val name = s"Name for $i"
             val createdAt = OffsetDateTime.parse(s"2021-06-26T19:45:49.$i+10:00")
             UserDocument(
               id = DocumentId(i.toString),
-              name = name,
-              data = User(UserId(i), Username(name), createdAt, verified = true)
+              data = User(UserId(i), Username(s"Name for $i"), createdAt, verified = true)
             )
           }
           .lift[IO]

@@ -9,7 +9,6 @@ object TransformToUserDocument {
   def apply(user: User): UserDocument = {
     UserDocument(
       DocumentId(user.id.value.toString),
-      name = user.name.value,
       data = user
     )
   }

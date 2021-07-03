@@ -55,7 +55,7 @@ class SearchRepositoryTest extends Specification with IOMatchers {
     ticketRef <- Ref.of[IO, TicketIndex](Index(documents = mutable.HashMap.empty))
     _ <- userRef.getAndUpdate(uIdx => {
       uIdx.documents.addOne(
-        DocumentId("1") -> UserDocument(DocumentId("1"), testUser.name.value, data = testUser)
+        DocumentId("1") -> UserDocument(DocumentId("1"), data = testUser)
       )
       uIdx
     })
@@ -63,10 +63,6 @@ class SearchRepositoryTest extends Specification with IOMatchers {
       tIdx.documents.addOne(
         DocumentId("123-abc") -> TicketDocument(
           DocumentId("123-abc"),
-          incidentType = testTicket.incidentType,
-          subject = testTicket.subject.value,
-          assignee = testTicket.assignee.map(_.value),
-          tags = "",
           testTicket
         )
       )

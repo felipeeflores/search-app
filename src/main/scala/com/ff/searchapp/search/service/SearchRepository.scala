@@ -20,7 +20,7 @@ class SearchRepository[F[_]: Functor](userIndex: Ref[F, UserIndex], ticketIndex:
   val findTicketsForUser: UserId => F[Vector[Ticket]] = userId => {
     ticketIndex.get.map(idx =>
       idx.documents.collect {
-        case (_, document) if document.assignee.forall(_ == userId.value) => document.data
+        case (_, document) if document.data.assignee.forall(_.value == userId.value) => document.data
       }.toVector
     )
   }
