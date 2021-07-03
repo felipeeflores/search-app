@@ -2,7 +2,7 @@ package com.ff.searchapp.search.service
 
 import com.ff.searchapp.model.IncidentType.Task
 import com.ff.searchapp.model.{User, UserId, Username}
-import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeField, IntFilter, TextFilter}
+import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, IntFilter, TextFilter}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.mutable.Specification
@@ -60,7 +60,7 @@ class UserSearchPredicateTest extends Specification {
       UserSearchPredicate(
         query = query.copy(
           filters = Vector(
-            IncidentTypeField(fieldName = "type", operator = Operator.EQUALS, value = Task)
+            IncidentTypeFilter(fieldName = "type", operator = Operator.EQUALS, value = Task)
           )
         )
       )(

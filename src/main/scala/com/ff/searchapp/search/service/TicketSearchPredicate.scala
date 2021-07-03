@@ -19,8 +19,8 @@ object TicketSearchPredicate {
       case TextFilter("id", Operator.EQUALS, value) => ticket.id.value == value
       case TextFilter("subject", Operator.EQUALS, value) => ticket.subject.value == value
       case TextFilter("subject", Operator.LIKE, value) => ticket.subject.value.contains(value)
-      case OptionalIntField("assignee", Operator.EQUALS, Some(value)) => ticket.assignee.forall(_.value == value)
-      case IncidentTypeField("type", Operator.EQUALS, incidentType) => ticket.incidentType == incidentType
+      case OptionalIntFilter("assignee", Operator.EQUALS, Some(value)) => ticket.assignee.forall(_.value == value)
+      case IncidentTypeFilter("type", Operator.EQUALS, incidentType) => ticket.incidentType == incidentType
       case _ => true
     }
   }

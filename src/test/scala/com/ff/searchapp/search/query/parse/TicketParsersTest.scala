@@ -2,7 +2,7 @@ package com.ff.searchapp.search.query.parse
 
 import atto.Atto._
 import com.ff.searchapp.model.IncidentType._
-import com.ff.searchapp.search.query.Filter.{IncidentTypeField, MultipleTextField, OptionalIntField, TextFilter}
+import com.ff.searchapp.search.query.Filter.{IncidentTypeFilter, MultipleTextFilter, OptionalIntFilter, TextFilter}
 import com.ff.searchapp.search.query.Operator
 import org.specs2.mutable.Specification
 import org.specs2.specification.core.Fragment
@@ -36,7 +36,7 @@ class TicketParsersTest extends Specification {
             s"$rawIncidentType" in {
               val rawFilter = s"type==$rawIncidentType"
               val expectedFilter =
-                Vector(IncidentTypeField("incidentType", Operator.EQUALS, expectedIncidentType))
+                Vector(IncidentTypeFilter("incidentType", Operator.EQUALS, expectedIncidentType))
 
               val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
               result must beRight(expectedFilter)
@@ -65,7 +65,7 @@ class TicketParsersTest extends Specification {
         "assignee" in {
           "with an assignee value" in {
             val rawFilter = "assignee==777"
-            val expectedFilter = Vector(OptionalIntField("assignee", Operator.EQUALS, Some(777)))
+            val expectedFilter = Vector(OptionalIntFilter("assignee", Operator.EQUALS, Some(777)))
 
             val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
             result must beRight(expectedFilter)
@@ -73,7 +73,7 @@ class TicketParsersTest extends Specification {
 
           "with an assignee of null" in {
             val rawFilter = "assignee==null"
-            val expectedFilter = Vector(OptionalIntField("assignee", Operator.EQUALS, None))
+            val expectedFilter = Vector(OptionalIntFilter("assignee", Operator.EQUALS, None))
 
             val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
             result must beRight(expectedFilter)
@@ -81,7 +81,7 @@ class TicketParsersTest extends Specification {
 
           "unassigned" in {
             val rawFilter = "unassigned"
-            val expectedFilter = Vector(OptionalIntField("assignee", Operator.EQUALS, None))
+            val expectedFilter = Vector(OptionalIntFilter("assignee", Operator.EQUALS, None))
 
             val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
             result must beRight(expectedFilter)
@@ -91,7 +91,7 @@ class TicketParsersTest extends Specification {
         "tags" in {
           val rawFilter = "tags=[foo, bar, baz]"
           val expectedFilter = Vector(
-            MultipleTextField(
+            MultipleTextFilter(
               fieldName = "tags",
               operator = Operator.IN,
               values = Vector("foo", "bar", "baz")
@@ -106,9 +106,9 @@ class TicketParsersTest extends Specification {
           val rawFilter = s"id==foo type==task subject=%testing% unassigned"
           val expectedFilter = Vector(
             TextFilter("id", Operator.EQUALS, "foo"),
-            IncidentTypeField("incidentType", Operator.EQUALS, Task),
+            IncidentTypeFilter("incidentType", Operator.EQUALS, Task),
             TextFilter("subject", Operator.LIKE, "testing"),
-            OptionalIntField("assignee", Operator.EQUALS, None)
+            OptionalIntFilter("assignee", Operator.EQUALS, None)
           )
 
           val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either

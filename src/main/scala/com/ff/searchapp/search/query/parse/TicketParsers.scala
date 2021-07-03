@@ -5,7 +5,7 @@ import atto._
 import cats.Alternative
 import com.ff.searchapp.model.IncidentType
 import com.ff.searchapp.model.IncidentType.{Incident, Other, Problem, Question, Task}
-import com.ff.searchapp.search.query.Filter.{IncidentTypeField, MultipleTextField, OptionalIntField}
+import com.ff.searchapp.search.query.Filter.{IncidentTypeFilter, MultipleTextFilter, OptionalIntFilter}
 import com.ff.searchapp.search.query.{Filter, Operator}
 import com.ff.searchapp.search.query.Operator.EQUALS
 import com.ff.searchapp.search.query.parse.Parsers._
@@ -21,7 +21,7 @@ object TicketParsers {
   private val unassignedParser = for {
     _ <- skipWhitespace
     _ <- string("unassigned")
-  } yield OptionalIntField(
+  } yield OptionalIntFilter(
     fieldName = "assignee",
     operator = EQUALS,
     value = None
@@ -34,26 +34,26 @@ object TicketParsers {
       string("task").map(_ => Task) |
       Alternative[Parser].pure(Other)
 
-  private val incidentTypeFilterParser: Parser[IncidentTypeField] = for {
+  private val incidentTypeFilterParser: Parser[IncidentTypeFilter] = for {
     _ <- skipWhitespace
     _ <- string("type")
     _ <- equalsParser
     operator <- operatorParser
     incidentType <- incidentTypeParser
-  } yield IncidentTypeField("incidentType", operator, incidentType)
+  } yield IncidentTypeFilter("incidentType", operator, incidentType)
 
-  private val assigneeParser: Parser[OptionalIntField] =
+  private val assigneeParser: Parser[OptionalIntFilter] =
     nullValueOptionalIntFieldParser(assigneeFieldNameParser) | unassignedParser
 
   //TODO: complete this parser
-  val tagsParser: Parser[MultipleTextField] = for {
+  val tagsParser: Parser[MultipleTextFilter] = for {
     _ <- skipWhitespace
     fieldName <- tagsFieldNameParser
     _ <- equalsParser
     _ <- char('[')
     values <- many(commaSeparatedValueParser)
     _ <- char(']')
-  } yield MultipleTextField(fieldName, Operator.IN, values.toVector)
+  } yield MultipleTextFilter(fieldName, Operator.IN, values.toVector)
 
   private val oneTicketQueryFilterParser: Parser[Filter] =
     textFieldParser(ticketTextFieldNameParser) | incidentTypeFilterParser | assigneeParser
