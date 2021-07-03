@@ -12,7 +12,7 @@ class SearchRepository[F[_]: Functor](userIndex: Ref[F, UserIndex], ticketIndex:
   val findUsers: Query => F[Vector[User]] = qry => {
     userIndex.get.map(idx =>
       idx.documents.collect {
-        case (_, document)  if UserSearchPredicate(qry)(document.data) => document.data
+        case (_, document) if UserSearchPredicate(qry)(document.data) => document.data
       }.toVector
     )
   }
@@ -20,8 +20,24 @@ class SearchRepository[F[_]: Functor](userIndex: Ref[F, UserIndex], ticketIndex:
   val findTicketsForUser: UserId => F[Vector[Ticket]] = userId => {
     ticketIndex.get.map(idx =>
       idx.documents.collect {
-        case (_, document)  if document.assignee.forall(_ == userId.value) => document.data
+        case (_, document) if document.assignee.forall(_ == userId.value) => document.data
       }.toVector
+    )
+  }
+
+  val findTickets: Query => F[Vector[Ticket]] = qry => {
+    ticketIndex.get.map(idx =>
+      idx.documents.collect {
+        case (_, document) if TicketSearchPredicate(qry)(document.data) => document.data
+      }.toVector
+    )
+  }
+
+  val findUserForTicket: UserId => F[Option[User]] = userId => {
+    userIndex.get.map(idx =>
+      idx.documents.collectFirst {
+        case (_, document) if document.data.id == userId => document.data
+      }
     )
   }
 }

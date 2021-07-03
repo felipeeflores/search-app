@@ -13,12 +13,22 @@ class SearchServiceTest extends Specification with IOMatchers {
 
   "SearchService" should {
     val anyQuery = Query(UserSearch, Vector.empty)
-    "searchUsers with their tickets" in {
+
+    "search users with their tickets" in {
       val expectedResult = Vector(
         UserSearchResult(testUser, Vector(testTicket, anotherTicket)),
         UserSearchResult(anotherUser, Vector.empty)
       )
       searchService.searchUsers(anyQuery) must returnValue(expectedResult)
+    }
+
+    "search tickets with its assigned user if available" in {
+      val expectedResult = Vector(
+        TicketSearchResult(testTicket, Some(testUser)),
+        TicketSearchResult(unassignedTicket, None),
+        TicketSearchResult(orphanTicket, None)
+      )
+      searchService.searchTickets(anyQuery) must returnValue(expectedResult)
     }
   }
 
@@ -30,7 +40,7 @@ class SearchServiceTest extends Specification with IOMatchers {
   )
   private val anotherUser = testUser.copy(
     id = UserId(2),
-    Username("admin")
+    name = Username("admin")
   )
   private val testTicket = Ticket(
     id = TicketId("123-abc"),
@@ -41,12 +51,19 @@ class SearchServiceTest extends Specification with IOMatchers {
     tags = Vector.empty
   )
   private val anotherTicket = testTicket.copy(id = TicketId("456-xyz"))
+  private val unassignedTicket = testTicket.copy(id = TicketId("789-def"), assignee = None)
+  private val orphanTicket = testTicket.copy(id = TicketId("789-def"), assignee = Some(UserId(777)))
 
   private val searchService = new SearchService[IO](
     findUsers = _ => IO.pure(Vector(testUser, anotherUser)),
     findUserTickets = {
       case UserId(1) => IO.pure(Vector(testTicket, anotherTicket))
       case _ => IO.pure(Vector.empty)
+    },
+    findTickets = _ => IO.pure(Vector(testTicket, unassignedTicket, orphanTicket)),
+    findUserForTicket = {
+      case UserId(1) => IO.pure(Some(testUser))
+      case _ => IO.pure(None)
     }
   )
 }
