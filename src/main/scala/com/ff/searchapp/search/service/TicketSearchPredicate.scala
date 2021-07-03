@@ -23,6 +23,7 @@ object TicketSearchPredicate {
       case TextFilter(SubjectField, Operator.EQUALS, value) => ticket.subject.value == value
       case TextFilter(SubjectField, Operator.LIKE, value) => ticket.subject.value.contains(value)
       case OptionalIntFilter(AssigneeField, Operator.EQUALS, Some(value)) => ticket.assignee.forall(_.value == value)
+      case OptionalIntFilter(AssigneeField, Operator.EQUALS, None) => ticket.assignee.isEmpty
       case IncidentTypeFilter(IncidentTypeField, Operator.EQUALS, incidentType) => ticket.incidentType == incidentType
       case _ => true
     }

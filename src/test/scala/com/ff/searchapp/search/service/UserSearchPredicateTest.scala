@@ -26,7 +26,7 @@ class UserSearchPredicateTest extends Specification {
       verified = false
     )
 
-    "return true for matching user" in {
+    "return true for matching query" in {
       val matchingQuery = query.copy(
         filters = Vector(
           IntFilter(UserIdField, Operator.EQUALS, 5),
@@ -38,7 +38,7 @@ class UserSearchPredicateTest extends Specification {
       UserSearchPredicate(matchingQuery)(user) must beTrue
     }
 
-    "return false for non matching user" in {
+    "return false for non matching query" in {
       val nonMatchingQuery = query.copy(
         filters = Vector(
           BooleanFilter(VerifiedField, Operator.EQUALS, value = true)
@@ -46,6 +46,46 @@ class UserSearchPredicateTest extends Specification {
       )
 
       UserSearchPredicate(nonMatchingQuery)(user) must beFalse
+    }
+
+    "return true for matching user id" in {
+      val userIdQuery = query.copy(
+        filters = Vector(
+          IntFilter(UserIdField, Operator.EQUALS, 7)
+        )
+      )
+      val matchingUser = user.copy(id = UserId(7))
+      UserSearchPredicate(userIdQuery)(matchingUser) must beTrue
+    }
+
+    "return true for matching user name" in {
+      val usernameQuery = query.copy(
+        filters = Vector(
+          TextFilter(UsernameField, Operator.EQUALS, "admin")
+        )
+      )
+      val matchingUser = user.copy(name = Username("admin"))
+      UserSearchPredicate(usernameQuery)(matchingUser) must beTrue
+    }
+
+    "return true for verified user" in {
+      val verifiedUsernameQuery = query.copy(
+        filters = Vector(
+          BooleanFilter(VerifiedField, Operator.EQUALS, value = true)
+        )
+      )
+      val matchingUser = user.copy(verified = true)
+      UserSearchPredicate(verifiedUsernameQuery)(matchingUser) must beTrue
+    }
+
+    "return true for un-verified user" in {
+      val unVerifiedUsernameQuery = query.copy(
+        filters = Vector(
+          BooleanFilter(VerifiedField, Operator.EQUALS, value = false)
+        )
+      )
+      val matchingUser = user.copy(verified = false)
+      UserSearchPredicate(unVerifiedUsernameQuery)(matchingUser) must beTrue
     }
 
     "return true for empty filters" in {
@@ -70,7 +110,7 @@ class UserSearchPredicateTest extends Specification {
       ) must beTrue
     }
 
-    "return true for non user searches" in {
+    "return true for non user searches, i.e. do not influence results" in {
       UserSearchPredicate(
         query = query.copy(
           searchType = TicketSearch,
