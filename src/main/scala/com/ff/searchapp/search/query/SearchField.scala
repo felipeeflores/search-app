@@ -19,4 +19,3 @@ object SearchField {
     case object TagsField extends SearchField { val fieldName = "tags" }
   }
 }
-

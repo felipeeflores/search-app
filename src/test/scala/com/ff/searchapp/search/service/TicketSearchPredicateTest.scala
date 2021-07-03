@@ -3,7 +3,9 @@ package com.ff.searchapp.search.service
 import com.ff.searchapp.model.IncidentType.{Problem, Question}
 import com.ff.searchapp.model.{Subject, Ticket, TicketId}
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, OptionalIntFilter, TextFilter}
-import com.ff.searchapp.search.query.SearchField.TicketSearchFields.{AssigneeField, IncidentTypeField, SubjectField, TicketIdField}
+import com.ff.searchapp.search.query.SearchField.TicketSearchFields.{
+  AssigneeField, IncidentTypeField, SubjectField, TicketIdField
+}
 import com.ff.searchapp.search.query.SearchField.UserSearchFields.VerifiedField
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}

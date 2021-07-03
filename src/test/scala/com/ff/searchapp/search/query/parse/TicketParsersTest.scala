@@ -15,7 +15,8 @@ class TicketParsersTest extends Specification {
       "for ticket search" in {
         "id" in {
           val rawFilter = "id==436bf9b0-1147-4c0a-8439-6f79833bff5b"
-          val expectedFilter = Vector(TextFilter(TicketIdField, Operator.EQUALS, "436bf9b0-1147-4c0a-8439-6f79833bff5b"))
+          val expectedFilter =
+            Vector(TextFilter(TicketIdField, Operator.EQUALS, "436bf9b0-1147-4c0a-8439-6f79833bff5b"))
 
           val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
 
