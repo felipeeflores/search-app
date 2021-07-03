@@ -5,7 +5,7 @@ import cats.{Monad, Parallel}
 import com.ff.searchapp.model.{Ticket, User, UserId}
 import com.ff.searchapp.search.query.Query
 
-final class SearchService[F[_] : Monad: Parallel](
+final class SearchService[F[_]: Monad: Parallel](
   findUsers: Query => F[Vector[User]],
   findUserTickets: UserId => F[Vector[Ticket]],
   findTickets: Query => F[Vector[Ticket]],
@@ -14,7 +14,7 @@ final class SearchService[F[_] : Monad: Parallel](
 
   def searchUsers(query: Query): F[Vector[UserSearchResult]] = {
     findUsers(query).flatMap { users =>
-      users.parTraverse( user =>
+      users.parTraverse(user =>
         findUserTickets(user.id)
           .map(UserSearchResult(user, _))
       )
@@ -24,8 +24,9 @@ final class SearchService[F[_] : Monad: Parallel](
   def searchTickets(query: Query): F[Vector[TicketSearchResult]] = {
     findTickets(query).flatMap { tickets =>
       tickets.parTraverse(ticket =>
-        ticket.assignee.flatTraverse(findUserForTicket)
-         .map(TicketSearchResult(ticket, _))
+        ticket.assignee
+          .flatTraverse(findUserForTicket)
+          .map(TicketSearchResult(ticket, _))
       )
     }
   }
