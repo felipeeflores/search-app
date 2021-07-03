@@ -7,6 +7,7 @@ import com.ff.searchapp.index.Document.{TicketDocument, UserDocument}
 import com.ff.searchapp.index.{Index, TicketIndex, UserIndex}
 
 import scala.collection.mutable
+import scala.concurrent.duration.DurationInt
 
 object App extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
@@ -22,6 +23,9 @@ object App extends IOApp {
       totalTickets <- ticketIndexRef.get.map(_.documents.size)
       _ <- IO(println(s"Total users loaded: ${totalUsers.toString}"))
       _ <- IO(println(s"Total tickets loaded: ${totalTickets.toString}"))
+      _ <- IO(println("Now loading search interface..."))
+      _ <- IO.sleep(500.millis)
+      _ <- di.searchClient.run
     } yield ExitCode.Success
   }
 }

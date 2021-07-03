@@ -1,5 +1,7 @@
 package com.ff.searchapp.model
 
+import cats.Show
+import cats.syntax.show._
 import io.circe.Decoder
 
 import java.time.OffsetDateTime
@@ -24,4 +26,13 @@ object Ticket {
       assignee <- c.get[Option[UserId]]("assignee_id")
       tags <- c.get[Vector[Tag]]("tags")
     } yield Ticket(id, createdAt, incidentType.getOrElse(IncidentType.Other), subject, assignee, tags)
+
+  implicit val ticketShow: Show[Ticket] = ticket => s"""
+                                                       |\tid: ${ticket.id.value.show}
+                                                       |\tcreatedAt: ${ticket.createdAt.toString}
+                                                       |\ttype: ${ticket.incidentType.show}
+                                                       |\tsubject: ${ticket.subject.value.show}
+                                                       |\tassignee id: ${ticket.assignee.map(_.value).show}
+                                                       |\ttags: ${ticket.tags.map(_.value).show}
+                                                       |""".stripMargin
 }

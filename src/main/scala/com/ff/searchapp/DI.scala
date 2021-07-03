@@ -7,6 +7,8 @@ import com.ff.searchapp.feeder._
 import com.ff.searchapp.index.Document.{TicketDocument, UserDocument}
 import com.ff.searchapp.index.{IndexManager, TicketIndex, UserIndex}
 import com.ff.searchapp.model.{Ticket, User}
+import com.ff.searchapp.search.client.SearchClient
+import com.ff.searchapp.search.service.{SearchRepository, SearchService}
 import io.circe.fs2.byteArrayParser
 
 /*
@@ -38,4 +40,14 @@ final case class DI(userIndexRef: Ref[IO, UserIndex], ticketIndexRef: Ref[IO, Ti
   )
 
   val feedProcess: FeedProcess = new FeedProcess(feedUserIndex = userFeeder.feed, feedTicketIndex = ticketFeeder.feed)
+
+  private val searchRepository = new SearchRepository[IO](userIndex = userIndexRef, ticketIndex = ticketIndexRef)
+  private val searchService = new SearchService[IO](
+    findUsers = searchRepository.findUsers,
+    findUserTickets = searchRepository.findTicketsForUser,
+    findTickets = searchRepository.findTickets,
+    findUserForTicket = searchRepository.findUserForTicket
+  )
+
+  val searchClient: SearchClient[IO] = SearchClient(searchService.search)
 }

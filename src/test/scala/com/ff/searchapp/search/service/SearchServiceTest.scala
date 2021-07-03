@@ -3,23 +3,24 @@ package com.ff.searchapp.search.service
 import cats.effect.IO
 import com.ff.searchapp.TestFixture.sampleOffsetDateTime
 import com.ff.searchapp.model.IncidentType.Task
-import com.ff.searchapp.model.{Subject, Ticket, TicketId, User, UserId, Username}
+import com.ff.searchapp.model._
+import com.ff.searchapp.search.SearchResult.{TicketSearchResult, UserSearchResult}
 import com.ff.searchapp.search.query.Query
-import com.ff.searchapp.search.query.SearchTarget.UserSearch
+import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import org.specs2.matcher.IOMatchers
 import org.specs2.mutable.Specification
 
 class SearchServiceTest extends Specification with IOMatchers {
 
   "SearchService" should {
-    val anyQuery = Query(UserSearch, Vector.empty)
+    val userQuery = Query(UserSearch, Vector.empty)
 
     "search users with their tickets" in {
       val expectedResult = Vector(
         UserSearchResult(testUser, Vector(testTicket, anotherTicket)),
         UserSearchResult(anotherUser, Vector.empty)
       )
-      searchService.searchUsers(anyQuery) must returnValue(expectedResult)
+      searchService.search(userQuery) must returnValue(expectedResult)
     }
 
     "search tickets with its assigned user if available" in {
@@ -28,7 +29,8 @@ class SearchServiceTest extends Specification with IOMatchers {
         TicketSearchResult(unassignedTicket, None),
         TicketSearchResult(orphanTicket, None)
       )
-      searchService.searchTickets(anyQuery) must returnValue(expectedResult)
+      val ticketQuery = userQuery.copy(searchType = TicketSearch)
+      searchService.search(ticketQuery) must returnValue(expectedResult)
     }
   }
 

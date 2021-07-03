@@ -1,5 +1,7 @@
 package com.ff.searchapp.model
 
+import cats.Show
+import cats.syntax.show._
 import io.circe.Decoder
 
 import java.time.OffsetDateTime
@@ -15,4 +17,11 @@ object User {
       username <- c.get[Username]("name")
       verified <- c.get[Option[Boolean]]("verified")
     } yield User(id, username, createdAt, verified.getOrElse(false))
+
+  implicit val userShow: Show[User] = usr => s"""
+                                                |\tid: ${usr.id.value.show}
+                                                |\tname: ${usr.name.value.show}
+                                                |\tcreatedAt: ${usr.createdAt.toString}
+                                                |\tverified: ${usr.verified.show}
+                                                |""".stripMargin
 }

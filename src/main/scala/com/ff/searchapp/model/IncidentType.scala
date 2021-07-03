@@ -1,5 +1,6 @@
 package com.ff.searchapp.model
 
+import cats.Show
 import io.circe.Decoder
 
 sealed trait IncidentType extends Product with Serializable
@@ -19,4 +20,12 @@ object IncidentType {
       case "task" => Right(Task)
       case _ => Right(Other)
     }
+
+  implicit val incidentTypeShow: Show[IncidentType] = {
+    case Incident => "incident"
+    case Problem => "problem"
+    case Question => "question"
+    case Task => "task"
+    case Other => "other"
+  }
 }
