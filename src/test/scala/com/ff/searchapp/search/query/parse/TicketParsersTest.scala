@@ -14,8 +14,8 @@ class TicketParsersTest extends Specification {
     "parse user filters" in {
       "for ticket search" in {
         "id" in {
-          val rawFilter = "id==foo"
-          val expectedFilter = Vector(TextFilter(TicketIdField, Operator.EQUALS, "foo"))
+          val rawFilter = "id==436bf9b0-1147-4c0a-8439-6f79833bff5b"
+          val expectedFilter = Vector(TextFilter(TicketIdField, Operator.EQUALS, "436bf9b0-1147-4c0a-8439-6f79833bff5b"))
 
           val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
 
@@ -104,9 +104,9 @@ class TicketParsersTest extends Specification {
         }.pendingUntilFixed("not supported yet")
 
         "with all features" in {
-          val rawFilter = "id==foo type==task subject=%testing% unassigned"
+          val rawFilter = "id==436bf9b0-1147-4c0a-8439-6f79833bff5b type==task subject=%testing% unassigned"
           val expectedFilter = Vector(
-            TextFilter(TicketIdField, Operator.EQUALS, "foo"),
+            TextFilter(TicketIdField, Operator.EQUALS, "436bf9b0-1147-4c0a-8439-6f79833bff5b"),
             IncidentTypeFilter(IncidentTypeField, Operator.EQUALS, Task),
             TextFilter(SubjectField, Operator.LIKE, "testing"),
             OptionalIntFilter(AssigneeField, Operator.EQUALS, None)

@@ -18,7 +18,8 @@ object Parsers {
 
   val operatorParser: Parser[Operator] = equalsParser.map(_ => EQUALS) | likeParser.map(_ => LIKE)
 
-  val wordParser: Parser[String] = many(letterOrDigit).map(_.mkString)
+  val textDataParser: Parser[Char] = noneOf("[]" + "%" + "=" + "," + " " + '\r'.toString + '\n'.toString)
+  val wordParser: Parser[String] = many(textDataParser).map(_.mkString)
 
   def textFieldParser(searchField: SearchField): Parser[TextFilter] = for {
     _ <- skipWhitespace
