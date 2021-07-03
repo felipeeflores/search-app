@@ -3,6 +3,7 @@ package com.ff.searchapp.search.query.parse
 import atto.Atto._
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IntFilter, TextFilter}
 import com.ff.searchapp.search.query.Operator
+import com.ff.searchapp.search.query.SearchField.UserSearchFields.{UserIdField, UsernameField, VerifiedField}
 import org.specs2.mutable.Specification
 
 class UserParsersTest extends Specification {
@@ -11,7 +12,7 @@ class UserParsersTest extends Specification {
     "parse user filters" in {
       "id" in {
         val rawFilter = "id==123"
-        val expectedFilter = Vector(IntFilter("id", Operator.EQUALS, 123))
+        val expectedFilter = Vector(IntFilter(UserIdField, Operator.EQUALS, 123))
 
         val result = UserParsers.userQueryFiltersParser.parseOnly(rawFilter).either
 
@@ -20,7 +21,7 @@ class UserParsersTest extends Specification {
 
       "username" in {
         val rawFilter = "username==jason"
-        val expectedFilter = Vector(TextFilter("username", Operator.EQUALS, "jason"))
+        val expectedFilter = Vector(TextFilter(UsernameField, Operator.EQUALS, "jason"))
 
         val result = UserParsers.userQueryFiltersParser.parseOnly(rawFilter).either
 
@@ -29,7 +30,7 @@ class UserParsersTest extends Specification {
 
       "verified" in {
         val rawFilter = "verified==true"
-        val expectedFilter = Vector(BooleanFilter("verified", Operator.EQUALS, value = true))
+        val expectedFilter = Vector(BooleanFilter(VerifiedField, Operator.EQUALS, value = true))
 
         val result = UserParsers.userQueryFiltersParser.parseOnly(rawFilter).either
 
@@ -39,9 +40,9 @@ class UserParsersTest extends Specification {
       "all filters together" in {
         val rawFilter = "id==123 username==jason verified==true"
         val expectedFilter = Vector(
-          IntFilter("id", Operator.EQUALS, 123),
-          TextFilter("username", Operator.EQUALS, "jason"),
-          BooleanFilter("verified", Operator.EQUALS, value = true)
+          IntFilter(UserIdField, Operator.EQUALS, 123),
+          TextFilter(UsernameField, Operator.EQUALS, "jason"),
+          BooleanFilter(VerifiedField, Operator.EQUALS, value = true)
         )
 
         val result = UserParsers.userQueryFiltersParser.parseOnly(rawFilter).either

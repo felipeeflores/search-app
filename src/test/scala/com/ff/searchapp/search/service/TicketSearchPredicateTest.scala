@@ -3,6 +3,8 @@ package com.ff.searchapp.search.service
 import com.ff.searchapp.model.IncidentType.{Problem, Question}
 import com.ff.searchapp.model.{Subject, Ticket, TicketId}
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, OptionalIntFilter, TextFilter}
+import com.ff.searchapp.search.query.SearchField.TicketSearchFields.{AssigneeField, IncidentTypeField, SubjectField, TicketIdField}
+import com.ff.searchapp.search.query.SearchField.UserSearchFields.VerifiedField
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.mutable.Specification
@@ -28,10 +30,10 @@ class TicketSearchPredicateTest extends Specification {
     "return true for matching query" in {
       val matchingQuery = query.copy(
         filters = Vector(
-          TextFilter("id", Operator.EQUALS, "id-123"),
-          TextFilter("subject", Operator.LIKE, "test"),
-          OptionalIntFilter("assignee", Operator.EQUALS, None),
-          IncidentTypeFilter("type", Operator.EQUALS, Problem)
+          TextFilter(TicketIdField, Operator.EQUALS, "id-123"),
+          TextFilter(SubjectField, Operator.LIKE, "test"),
+          OptionalIntFilter(AssigneeField, Operator.EQUALS, None),
+          IncidentTypeFilter(IncidentTypeField, Operator.EQUALS, Problem)
         )
       )
       TicketSearchPredicate(matchingQuery)(ticket) must beTrue
@@ -40,7 +42,7 @@ class TicketSearchPredicateTest extends Specification {
     "return false for non-matching query" in {
       val nonMatchingQuery = query.copy(
         filters = Vector(
-          IncidentTypeFilter("type", Operator.EQUALS, Question)
+          IncidentTypeFilter(IncidentTypeField, Operator.EQUALS, Question)
         )
       )
       TicketSearchPredicate(nonMatchingQuery)(ticket) must beFalse
@@ -58,7 +60,7 @@ class TicketSearchPredicateTest extends Specification {
       TicketSearchPredicate(
         query = query.copy(
           filters = Vector(
-            BooleanFilter("verified", Operator.EQUALS, value = true)
+            BooleanFilter(VerifiedField, Operator.EQUALS, value = true)
           )
         )
       )(
@@ -71,7 +73,7 @@ class TicketSearchPredicateTest extends Specification {
         query = query.copy(
           searchType = UserSearch,
           filters = Vector(
-            IncidentTypeFilter("type", Operator.EQUALS, Problem)
+            IncidentTypeFilter(IncidentTypeField, Operator.EQUALS, Problem)
           )
         )
       )(

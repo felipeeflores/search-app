@@ -7,6 +7,8 @@ import com.ff.searchapp.index.{DocumentId, Index, TicketIndex, UserIndex}
 import com.ff.searchapp.model.IncidentType.Task
 import com.ff.searchapp.model._
 import com.ff.searchapp.search.query.Filter.TextFilter
+import com.ff.searchapp.search.query.SearchField.TicketSearchFields.TicketIdField
+import com.ff.searchapp.search.query.SearchField.UserSearchFields.UsernameField
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.matcher.IOMatchers
@@ -18,7 +20,7 @@ class SearchRepositoryTest extends Specification with IOMatchers {
 
   "SearchRepository" should {
     "find users by query" in {
-      val query = Query(UserSearch, Vector(TextFilter("username", Operator.EQUALS, "root")))
+      val query = Query(UserSearch, Vector(TextFilter(UsernameField, Operator.EQUALS, "root")))
       repository.flatMap(_.findUsers(query)) must returnValue(Vector(testUser))
     }
 
@@ -27,7 +29,7 @@ class SearchRepositoryTest extends Specification with IOMatchers {
     }
 
     "find tickets by query" in {
-      val query = Query(TicketSearch, Vector(TextFilter("id", Operator.EQUALS, "123-abc")))
+      val query = Query(TicketSearch, Vector(TextFilter(TicketIdField, Operator.EQUALS, "123-abc")))
       repository.flatMap(_.findTickets(query)) must returnValue(Vector(testTicket))
     }
 

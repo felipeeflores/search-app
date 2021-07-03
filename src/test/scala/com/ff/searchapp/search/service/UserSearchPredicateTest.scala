@@ -3,6 +3,8 @@ package com.ff.searchapp.search.service
 import com.ff.searchapp.model.IncidentType.Task
 import com.ff.searchapp.model.{User, UserId, Username}
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, IntFilter, TextFilter}
+import com.ff.searchapp.search.query.SearchField.TicketSearchFields.IncidentTypeField
+import com.ff.searchapp.search.query.SearchField.UserSearchFields.{UserIdField, UsernameField, VerifiedField}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.mutable.Specification
@@ -27,9 +29,9 @@ class UserSearchPredicateTest extends Specification {
     "return true for matching user" in {
       val matchingQuery = query.copy(
         filters = Vector(
-          IntFilter("id", Operator.EQUALS, 5),
-          TextFilter("username", Operator.EQUALS, "root"),
-          BooleanFilter("verified", Operator.EQUALS, value = false)
+          IntFilter(UserIdField, Operator.EQUALS, 5),
+          TextFilter(UsernameField, Operator.EQUALS, "root"),
+          BooleanFilter(VerifiedField, Operator.EQUALS, value = false)
         )
       )
 
@@ -39,7 +41,7 @@ class UserSearchPredicateTest extends Specification {
     "return false for non matching user" in {
       val nonMatchingQuery = query.copy(
         filters = Vector(
-          BooleanFilter("verified", Operator.EQUALS, value = true)
+          BooleanFilter(VerifiedField, Operator.EQUALS, value = true)
         )
       )
 
@@ -60,7 +62,7 @@ class UserSearchPredicateTest extends Specification {
       UserSearchPredicate(
         query = query.copy(
           filters = Vector(
-            IncidentTypeFilter(fieldName = "type", operator = Operator.EQUALS, value = Task)
+            IncidentTypeFilter(IncidentTypeField, operator = Operator.EQUALS, value = Task)
           )
         )
       )(
@@ -73,7 +75,7 @@ class UserSearchPredicateTest extends Specification {
         query = query.copy(
           searchType = TicketSearch,
           filters = Vector(
-            BooleanFilter("verified", Operator.EQUALS, value = false)
+            BooleanFilter(VerifiedField, Operator.EQUALS, value = false)
           )
         )
       )(
