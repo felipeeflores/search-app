@@ -33,7 +33,7 @@ class UserSearchPredicateTest extends Specification {
         )
       )
 
-      UserSearchPredicate(user, matchingQuery) must beTrue
+      UserSearchPredicate(matchingQuery)(user) must beTrue
     }
 
     "return false for non matching user" in {
@@ -43,38 +43,41 @@ class UserSearchPredicateTest extends Specification {
         )
       )
 
-      UserSearchPredicate(user, nonMatchingQuery) must beFalse
+      UserSearchPredicate(nonMatchingQuery)(user) must beFalse
     }
 
     "return true for empty filters" in {
       UserSearchPredicate(
-        user = user,
         query = query.copy(
           filters = Vector.empty
         )
+      )(
+        user = user
       ) must beTrue
     }
 
     "return true for unknown filters" in {
       UserSearchPredicate(
-        user = user,
         query = query.copy(
           filters = Vector(
             IncidentTypeField(fieldName = "type", operator = Operator.EQUALS, value = Task)
           )
         )
+      )(
+        user = user
       ) must beTrue
     }
 
     "return true for non user searches" in {
       UserSearchPredicate(
-        user = user,
         query = query.copy(
           searchType = TicketSearch,
           filters = Vector(
             BooleanFilter("verified", Operator.EQUALS, value = false)
           )
         )
+      )(
+        user = user
       ) must beTrue
     }
   }

@@ -34,7 +34,7 @@ class TicketSearchPredicateTest extends Specification {
           IncidentTypeField("type", Operator.EQUALS, Problem)
         )
       )
-      TicketSearchPredicate(ticket, matchingQuery) must beTrue
+      TicketSearchPredicate(matchingQuery)(ticket) must beTrue
     }
 
     "return false for non-matching query" in {
@@ -43,38 +43,39 @@ class TicketSearchPredicateTest extends Specification {
           IncidentTypeField("type", Operator.EQUALS, Question)
         )
       )
-      TicketSearchPredicate(ticket, nonMatchingQuery) must beFalse
+      TicketSearchPredicate(nonMatchingQuery)(ticket) must beFalse
     }
 
     "return true for empty filters" in {
       TicketSearchPredicate(
-        ticket = ticket,
-        query = query.copy(
-          filters = Vector.empty
-        )
+        query = query.copy(filters = Vector.empty)
+      )(
+        ticket = ticket
       ) must beTrue
     }
 
     "return true for unknown filters" in {
       TicketSearchPredicate(
-        ticket = ticket,
         query = query.copy(
           filters = Vector(
             BooleanFilter("verified", Operator.EQUALS, value = true)
           )
         )
+      )(
+        ticket = ticket
       ) must beTrue
     }
 
     "return true for non ticket searches" in {
       TicketSearchPredicate(
-        ticket = ticket,
         query = query.copy(
           searchType = UserSearch,
           filters = Vector(
             IncidentTypeField("type", Operator.EQUALS, Problem)
           )
         )
+      )(
+        ticket = ticket
       ) must beTrue
     }
   }

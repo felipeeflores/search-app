@@ -7,7 +7,7 @@ import com.ff.searchapp.search.query.{Filter, Operator, Query}
 
 object TicketSearchPredicate {
 
-  def apply(ticket: Ticket, query: Query): Boolean = {
+  def apply(query: Query)(ticket: Ticket): Boolean = {
     query.searchType match {
       case TicketSearch => filtersToPredicate(ticket, query.filters)
       case UserSearch => true
