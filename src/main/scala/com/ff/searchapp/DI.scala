@@ -2,12 +2,12 @@ package com.ff.searchapp
 
 import cats.effect.{IO, Ref}
 import cats.syntax.show._
+import com.ff.searchapp.client.SearchClient
 import com.ff.searchapp.error.AppError
 import com.ff.searchapp.feeder._
 import com.ff.searchapp.index.Document.{TicketDocument, UserDocument}
 import com.ff.searchapp.index.{IndexManager, TicketIndex, UserIndex}
 import com.ff.searchapp.model.{Ticket, User}
-import com.ff.searchapp.search.client.SearchClient
 import com.ff.searchapp.search.service.{SearchRepository, SearchService}
 import io.circe.fs2.byteArrayParser
 
@@ -15,7 +15,11 @@ import io.circe.fs2.byteArrayParser
  Class to glue together all the individual production components.
  Better DI: Passing and type checking all the arguments/parameters at compile time.
  */
-final case class DI(userIndexRef: Ref[IO, UserIndex], ticketIndexRef: Ref[IO, TicketIndex]) {
+final case class DI(
+  userIndexRef: Ref[IO, UserIndex],
+  ticketIndexRef: Ref[IO, TicketIndex],
+  maxSearchResults: Option[Int]
+) {
   private val userIndexManager = new IndexManager[IO, UserDocument, User](userIndexRef)
   private val ticketIndexManager = new IndexManager[IO, TicketDocument, Ticket](ticketIndexRef)
 
@@ -49,5 +53,5 @@ final case class DI(userIndexRef: Ref[IO, UserIndex], ticketIndexRef: Ref[IO, Ti
     findUserForTicket = searchRepository.findUserForTicket
   )
 
-  val searchClient: SearchClient[IO] = SearchClient(searchService.search)
+  val searchClient: SearchClient[IO] = SearchClient(search = searchService.search, maxSearchResults = maxSearchResults)
 }

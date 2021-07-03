@@ -19,8 +19,8 @@ object User {
     } yield User(id, username, createdAt, verified.getOrElse(false))
 
   implicit val userShow: Show[User] = usr => s"""
-                                                |\tid: ${usr.id.value.show}
-                                                |\tname: ${usr.name.value.show}
+                                                |\tid: ${usr.id.show}
+                                                |\tname: ${usr.name.show}
                                                 |\tcreatedAt: ${usr.createdAt.toString}
                                                 |\tverified: ${usr.verified.show}
                                                 |""".stripMargin

@@ -1,4 +1,4 @@
-package com.ff.searchapp.search.client
+package com.ff.searchapp.client
 
 import cats.effect.std.Console
 import cats.effect.{IO, Sync}
@@ -8,10 +8,12 @@ import com.ff.searchapp.error.ErrorOr
 import com.ff.searchapp.search.SearchResult
 import com.ff.searchapp.search.query.Query
 import com.ff.searchapp.search.query.parse.ParseQuery
+import com.ff.searchapp.vectorShow
 
 class SearchClient[F[_]: Sync: Console](
   parseQuery: String => ErrorOr[Query],
-  search: Query => F[Vector[SearchResult]]
+  search: Query => F[Vector[SearchResult]],
+  maxSearchResults: Option[Int]
 ) {
 
   def run: F[Unit] = {
@@ -24,20 +26,18 @@ class SearchClient[F[_]: Sync: Console](
 
   private def printUsage: F[Unit] = {
     for {
-      _ <- Console[F].println("Usage:\n")
-      _ <- Console[F].println("User search:")
+      _ <- Console[F].println("\nUsage:\n")
+      _ <- Console[F].println(" User search:")
       _ <- Console[F].println("\tfrom:users <filters>")
       _ <- Console[F].println("\twhere:")
-      _ <- Console[F].println("\t\tfilters is one of:")
+      _ <- Console[F].println("\t\tfilters are one or more of:")
       _ <- Console[F].println("\t\t\tid==a-user-id username==a-username verified==<true|false>")
-      _ <- Console[F].println("Ticket search:")
+      _ <- Console[F].println(" Ticket search:")
       _ <- Console[F].println("\tfrom:tickets <filters>")
       _ <- Console[F].println("\twhere:")
-      _ <- Console[F].println("\t\tfilters is one of:")
-      _ <- Console[F].println(
-        "\t\t\tid==a-ticket-id type==<incident,problem,question,task> subject=%testing% unassigned"
-      )
-      _ <- Console[F].println("\t\t\tsubject=%a-subject% unassigned|assigned==<a-user-id>")
+      _ <- Console[F].println("\t\tfilters are one or more of:")
+      _ <- Console[F].println("\t\t\tid==a-ticket-id type==<incident,problem,question,task> subject=%testing%")
+      _ <- Console[F].println("\t\t\tsubject=%a-subject% unassigned|assignee==<a-user-id>|assigned==null")
       _ <- Console[F].println("")
     } yield ()
   }
@@ -47,8 +47,14 @@ class SearchClient[F[_]: Sync: Console](
       _ <- Console[F].println("Enter your query (type help for usage, Ctrl+C to exit):")
       rawQuery <- Console[F].readLine
       searchResults <- runSearch(rawQuery)
-      _ <- Console[F].println(searchResults)
+      takeResults = maxSearchResults
+        .map(_ min searchResults.size)
+        .getOrElse(searchResults.size)
+      _ <- Console[F].println("\nSearch Results:\n")
+      _ <- Console[F].println(searchResults.take(takeResults))(vectorShow)
       _ <- Console[F].println("\n")
+      _ <- Console[F].println(s"Total results: ${searchResults.size.toString}")
+      _ <- Console[F].println(s"Showing: ${takeResults.toString}")
     } yield ()
 
     Sync[F].handleErrorWith(doSearch)(handleError) >> loop
@@ -75,10 +81,11 @@ class SearchClient[F[_]: Sync: Console](
 }
 
 object SearchClient {
-  def apply(search: Query => IO[Vector[SearchResult]]): SearchClient[IO] = {
+  def apply(search: Query => IO[Vector[SearchResult]], maxSearchResults: Option[Int]): SearchClient[IO] = {
     new SearchClient[IO](
       parseQuery = ParseQuery.apply,
-      search = search
+      search = search,
+      maxSearchResults = maxSearchResults
     )
   }
 }

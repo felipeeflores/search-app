@@ -1,8 +1,9 @@
 package com.ff.searchapp.feeder
 
 import cats.effect.IO
-import com.ff.searchapp.error.AppError
 import cats.syntax.show._
+import com.ff.searchapp.Config
+import com.ff.searchapp.error.AppError
 import com.ff.searchapp.error.AppError.UnexpectedError
 
 class FeedProcess(
@@ -11,11 +12,11 @@ class FeedProcess(
 ) {
   def run(config: Config): IO[Unit] = {
     val process = for {
-      _ <- IO(println("Loading user data"))
+      _ <- IO(println("\nLoading user data"))
       _ <- feedUserIndex(config.usersFile)
       _ <- IO(println("Now loading ticket data"))
       _ <- feedTicketIndex(config.ticketsFile)
-      _ <- IO(println("Data loaded successfully...\n"))
+      _ <- IO(println("\nData loaded successfully...\n"))
     } yield ()
 
     process.handleErrorWith(throwable => {
