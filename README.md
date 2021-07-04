@@ -5,6 +5,7 @@ Simple in memory search application built using Scala and Functional Programming
 ## Design
 
 ![search-app design](./assets/design.svg)
+Arrows denote data flow.
 
 ### Modules
 
