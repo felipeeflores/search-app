@@ -2,7 +2,9 @@ package com.ff.searchapp.search.service
 
 import com.ff.searchapp.model.Ticket
 import com.ff.searchapp.search.query.Filter._
-import com.ff.searchapp.search.query.SearchField.TicketSearchFields.{AssigneeField, IncidentTypeField, SubjectField, TicketIdField}
+import com.ff.searchapp.search.query.SearchField.TicketSearchFields.{
+  AssigneeField, IncidentTypeField, SubjectField, TicketIdField
+}
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Filter, Operator, Query}
 import com.ff.searchapp.{compareStringContainsAnother, compareStringEquals}

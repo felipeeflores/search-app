@@ -1,7 +1,7 @@
 package com.ff.searchapp.feeder
 
 import com.ff.searchapp.error.AppError.ExtractFileError
-import fs2.{Collector, text}
+import fs2.{text, Collector}
 import org.specs2.matcher.IOMatchers
 import org.specs2.mutable.Specification
 
@@ -17,10 +17,9 @@ class ExtractTest extends Specification with IOMatchers {
     }
 
     "report extraction errors" in {
-      Extract("/tmp/not-exists.json")
-        .compile
-        .toVector
-        .attempt must returnValue(Left(ExtractFileError("/tmp/not-exists.json")))
+      Extract("/tmp/not-exists.json").compile.toVector.attempt must returnValue(
+        Left(ExtractFileError("/tmp/not-exists.json"))
+      )
     }
   }
 }

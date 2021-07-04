@@ -9,6 +9,7 @@ import org.specs2.mutable.Specification
 
 import java.time.OffsetDateTime
 import scala.collection.mutable
+import scala.concurrent.duration.DurationInt
 
 class IndexManagerTest extends Specification with IOMatchers {
 
@@ -29,6 +30,7 @@ class IndexManagerTest extends Specification with IOMatchers {
           .parEvalMap(maxConcurrent = 4)(indexManager.addDocument)
           .compile
           .drain
+          .flatMap(_ => IO.sleep(50.millis))
           .flatMap(_ => ref.get)
       }
 
