@@ -131,7 +131,7 @@ Finally, to exit just press `Ctrl+C`.
 ## Limitations and known issues
 
 - The test `IndexManagerSpec` has been seen failing once. No repoduction has been possible and no more time has been
-  available for further investigation.
+  available for further investigation (a 50 millisecond delay has been as a workaround before checking indexing result).
 - tags filter is currently not supported, nor the values in operator `[]`.
 - no ability to scroll trough past queries.
 - Query Filters can be improved by enforcing their search target. This however has not been implemented due to time
