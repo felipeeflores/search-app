@@ -66,12 +66,16 @@ to the other per search result. A possible mitigation/workaround for this is the
 references to the other two entities in a "fat" style (but without the need of extra memory allocation). This approach
 has been discarded to favour simplicity and reduced development time.
 
+Another tradeoff made here is that by choosing a mutable data structure, bugs could be introduced in the long run,
+however atomic and thread safe data types are used as a mitigation. Additionally, the current requirements of feeding
+first and then reading only (searching) brings the risk to its lowest (no concurrent reads and updates).
+
 ## Programming Principles and Choices
 
  - Use the [cats](https://typelevel.org/cats/) library for functional constructs and data types.
  - Use [cats-effect](https://typelevel.org/cats-effect/) library for managing effects and execution.
  - Use [fs2](https://fs2.io/#/) for feeding data as streams for high performance and low resource consumption.
- - Prefer immutability (with the exception of search index being mutable, as explained in the previous section)
+ - Prefer immutability (with the exception of search index being mutable, as explained in the previous section).
  - Prefer the tagless final encoding for adopting the principle of least knowledge/power.
  - Use dependencies as functions: that is, DI is implemented by defining/passing dependencies as functions (checked at
    compile time).
@@ -79,8 +83,10 @@ has been discarded to favour simplicity and reduced development time.
    newtypes and the like are used everywhere).
  - Use an ADT to represent application errors.
  - Use [circe](https://circe.github.io/circe/) as json decoding library.
- - Use parser combinators for query parsing. See [atto](https://tpolecat.github.io/atto/) library
- - Use cats `Show` typeclass to represent data types as Strings to print in the client console.
+ - Use parser combinators for query parsing. See [atto](https://tpolecat.github.io/atto/) library. Parser combinators
+   can get verbose, however they are far more flexible and less complicated than regular expressions.
+ - Use cats `Show` typeclass to represent data types as Strings to print in the client console (this works out of the
+   box with cats-effect console facilities).
 
 ## Requirements
 
@@ -131,11 +137,12 @@ Finally, to exit just press `Ctrl+C`.
 
 ## Limitations and known issues
 
-- The test `IndexManagerSpec` has been seen failing once. No repoduction has been possible and no more time has been
-  available for further investigation (a 50 millisecond delay has been as a workaround before checking indexing result).
-- tags filter is currently not supported, nor the values in operator `[]`.
-- no ability to scroll trough past queries.
-- Query Filters can be improved by enforcing their search target. This however has not been implemented due to time
+ - The test `IndexManagerSpec` has been seen failing once. No repoduction has been possible and no more time has been
+   available for further investigation (a 50 millisecond delay has been as a workaround before checking indexing result).
+ - tags filter is currently not supported, nor the values in operator `[]`.
+ - searching for date fields is not currently supported.
+ - no ability to scroll trough past queries.
+ - Query Filters can be improved by enforcing their search target. This however has not been implemented due to time
   restrictions.
 
 ## Final Words
