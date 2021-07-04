@@ -21,7 +21,6 @@ libraryDependencies ++= Seq(
   "io.circe"        %%    "circe-literal"           % circeVersion,
   "io.circe"        %%    "circe-fs2"               % circeFs2Version,
   "org.tpolecat"    %%    "atto-core"               % attoVersion,
-  "org.tpolecat"    %%    "atto-refined"            % attoVersion,
   "org.typelevel"   %%    "cats-effect-laws"        % catsEffectVersion   % Test,
   "org.specs2"      %%    "specs2-core"             % specs2Version       % Test,
   "org.specs2"      %%    "specs2-cats"             % specs2Version       % Test,
