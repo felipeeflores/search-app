@@ -56,8 +56,8 @@ class TicketParsersTest extends Specification {
           }
 
           "LIKE (%) operator" in {
-            val rawFilter = s"subject=%bar%"
-            val expectedFilter = Vector(TextFilter(SubjectField, Operator.LIKE, "bar"))
+            val rawFilter = s"subject=%Nuisance%"
+            val expectedFilter = Vector(TextFilter(SubjectField, Operator.LIKE, "nuisance"))
 
             val result = TicketParsers.ticketQueryFiltersParser.parseOnly(rawFilter).either
             result must beRight(expectedFilter)

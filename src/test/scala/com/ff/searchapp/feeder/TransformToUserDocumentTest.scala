@@ -1,11 +1,10 @@
 package com.ff.searchapp.feeder
 
+import com.ff.searchapp.TestFixture.sampleOffsetDateTime
 import com.ff.searchapp.index.Document.UserDocument
 import com.ff.searchapp.index.DocumentId
 import com.ff.searchapp.model.{User, UserId, Username}
 import org.specs2.mutable.Specification
-
-import java.time.OffsetDateTime
 
 class TransformToUserDocumentTest extends Specification {
 
@@ -15,7 +14,7 @@ class TransformToUserDocumentTest extends Specification {
       val aUser = User(
         UserId(1),
         Username("John Kaine"),
-        createdAt = OffsetDateTime.parse(s"2021-06-26T19:45:49.0+10:00"),
+        createdAt = sampleOffsetDateTime,
         verified = false
       )
       TransformToUserDocument(aUser) must beEqualTo(

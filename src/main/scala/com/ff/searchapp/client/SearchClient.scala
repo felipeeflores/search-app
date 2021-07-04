@@ -39,6 +39,9 @@ class SearchClient[F[_]: Sync: Console](
       _ <- Console[F].println("\t\t\tid==a-ticket-id type==<incident,problem,question,task> subject=%testing%")
       _ <- Console[F].println("\t\t\tsubject=%a-subject% unassigned|assignee==<a-user-id>|assigned==null")
       _ <- Console[F].println("")
+      _ <- Console[F].println("\tSample queries:")
+      _ <- Console[F].println("\t\t- Unassigned tasks: from:tickets unassigned type==task")
+      _ <- Console[F].println("\t\t- Subject like (one word only): from:tickets subject=%nuisance%")
     } yield ()
   }
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))

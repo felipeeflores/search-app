@@ -10,7 +10,7 @@ object Config {
   def loadConfig: Config = Config(
     usersFile = sys.env.getOrElse("USERS_JSON", "./data/users.json"),
     ticketsFile = sys.env.getOrElse("TICKETS_JSON", "./data/tickets.json"),
-    verboseErrors = true,
+    verboseErrors = sys.env.get("VERBOSE_ERRORS").flatMap(str => Try(str.toBoolean).toOption).getOrElse(false),
     maxSearchResults = sys.env.get("MAX_SEARCH_RESULTS").flatMap(str => Try(str.toInt).toOption)
   )
 

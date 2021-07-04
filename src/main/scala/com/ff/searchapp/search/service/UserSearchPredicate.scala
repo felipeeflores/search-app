@@ -1,5 +1,6 @@
 package com.ff.searchapp.search.service
 
+import com.ff.searchapp.compareStringEquals
 import com.ff.searchapp.model.User
 import com.ff.searchapp.search.query.Filter._
 import com.ff.searchapp.search.query.SearchField.UserSearchFields.{UserIdField, UsernameField, VerifiedField}
@@ -18,7 +19,7 @@ object UserSearchPredicate {
   private def filtersToPredicate(user: User, filters: Vector[Filter]): Boolean = {
     filters.forall {
       case IntFilter(UserIdField, Operator.EQUALS, value) => user.id.value == value
-      case TextFilter(UsernameField, Operator.EQUALS, value) => user.name.value == value
+      case TextFilter(UsernameField, Operator.EQUALS, value) => compareStringEquals(user.name.value, value)
       case BooleanFilter(VerifiedField, Operator.EQUALS, value) => user.verified == value
       case _ => true
     }

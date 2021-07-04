@@ -1,5 +1,6 @@
 package com.ff.searchapp.search.service
 
+import com.ff.searchapp.TestFixture.sampleOffsetDateTime
 import com.ff.searchapp.model.IncidentType.{Incident, Other, Problem, Question, Task}
 import com.ff.searchapp.model.{Subject, Ticket, TicketId, UserId}
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, OptionalIntFilter, TextFilter}
@@ -12,8 +13,6 @@ import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.mutable.Specification
 import org.specs2.specification.core.Fragment
 
-import java.time.OffsetDateTime
-
 class TicketSearchPredicateTest extends Specification {
 
   "TicketSearchPredicate" should {
@@ -23,7 +22,7 @@ class TicketSearchPredicateTest extends Specification {
     )
     val ticket = Ticket(
       id = TicketId("id-123"),
-      createdAt = OffsetDateTime.parse(s"2021-06-26T19:45:49.0+10:00"),
+      createdAt = sampleOffsetDateTime,
       incidentType = Problem,
       subject = Subject("testing"),
       assignee = None,
@@ -52,34 +51,67 @@ class TicketSearchPredicateTest extends Specification {
     }
 
     "return true for matching ticket id" in {
-      val idQuery = query.copy(
-        filters = Vector(
-          TextFilter(TicketIdField, Operator.EQUALS, "123-abc")
-        )
-      )
       val matchingTicket = ticket.copy(id = TicketId("123-abc"))
-      TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
-    }
 
-    "return true for matching subject" in {
-      val matchingTicket = ticket.copy(subject = Subject("a good client"))
-
-      "with EQUALS operator" in {
+      "exact match" in {
         val idQuery = query.copy(
           filters = Vector(
-            TextFilter(SubjectField, Operator.EQUALS, "a good client")
+            TextFilter(TicketIdField, Operator.EQUALS, "123-abc")
           )
         )
         TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
       }
-
-      "with LIKE operator" in {
+      "ignoring case" in {
         val idQuery = query.copy(
           filters = Vector(
-            TextFilter(SubjectField, Operator.LIKE, "good")
+            TextFilter(TicketIdField, Operator.EQUALS, "123-AbC")
           )
         )
         TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
+      }
+    }
+
+    "return true for matching subject" in {
+      val matchingTicket = ticket.copy(subject = Subject("A Good Client"))
+
+      "with EQUALS operator" in {
+        "exact match" in {
+          val idQuery = query.copy(
+            filters = Vector(
+              TextFilter(SubjectField, Operator.EQUALS, "A Good Client")
+            )
+          )
+          TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
+        }
+
+        "ignoring case" in {
+          val idQuery = query.copy(
+            filters = Vector(
+              TextFilter(SubjectField, Operator.EQUALS, "a good CLIENT")
+            )
+          )
+          TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
+        }
+      }
+
+      "with LIKE operator" in {
+        "exact match" in {
+          val idQuery = query.copy(
+            filters = Vector(
+              TextFilter(SubjectField, Operator.LIKE, "Good")
+            )
+          )
+          TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
+        }
+
+        "ignoring case" in {
+          val idQuery = query.copy(
+            filters = Vector(
+              TextFilter(SubjectField, Operator.LIKE, "GOOD")
+            )
+          )
+          TicketSearchPredicate(idQuery)(matchingTicket) must beTrue
+        }
       }
     }
 

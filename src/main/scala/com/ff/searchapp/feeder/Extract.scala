@@ -1,6 +1,7 @@
 package com.ff.searchapp.feeder
 
 import cats.effect.IO
+import com.ff.searchapp.error.AppError.ExtractFileError
 import fs2.Stream
 import fs2.io.file.Files
 
@@ -14,5 +15,9 @@ object Extract {
     Stream
       .eval(pathF)
       .flatMap(path => Files[IO].readAll(path, 4096))
+      .handleErrorWith { _ =>
+        val appError = ExtractFileError(rawPath)
+        Stream.raiseError[IO](appError)
+      }
   }
 }

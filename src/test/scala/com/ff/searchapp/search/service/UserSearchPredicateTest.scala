@@ -1,5 +1,6 @@
 package com.ff.searchapp.search.service
 
+import com.ff.searchapp.TestFixture.sampleOffsetDateTime
 import com.ff.searchapp.model.IncidentType.Task
 import com.ff.searchapp.model.{User, UserId, Username}
 import com.ff.searchapp.search.query.Filter.{BooleanFilter, IncidentTypeFilter, IntFilter, TextFilter}
@@ -8,8 +9,6 @@ import com.ff.searchapp.search.query.SearchField.UserSearchFields.{UserIdField, 
 import com.ff.searchapp.search.query.SearchTarget.{TicketSearch, UserSearch}
 import com.ff.searchapp.search.query.{Operator, Query}
 import org.specs2.mutable.Specification
-
-import java.time.OffsetDateTime
 
 class UserSearchPredicateTest extends Specification {
 
@@ -22,7 +21,7 @@ class UserSearchPredicateTest extends Specification {
     val user = User(
       id = UserId(5),
       name = Username("root"),
-      createdAt = OffsetDateTime.parse(s"2021-06-26T19:45:49.0+10:00"),
+      createdAt = sampleOffsetDateTime,
       verified = false
     )
 
@@ -59,13 +58,26 @@ class UserSearchPredicateTest extends Specification {
     }
 
     "return true for matching user name" in {
-      val usernameQuery = query.copy(
-        filters = Vector(
-          TextFilter(UsernameField, Operator.EQUALS, "admin")
+      "exact match" in {
+        val usernameQuery = query.copy(
+          filters = Vector(
+            TextFilter(UsernameField, Operator.EQUALS, "admin")
+          )
         )
-      )
-      val matchingUser = user.copy(name = Username("admin"))
-      UserSearchPredicate(usernameQuery)(matchingUser) must beTrue
+        val matchingUser = user.copy(name = Username("admin"))
+        UserSearchPredicate(usernameQuery)(matchingUser) must beTrue
+      }
+
+      "ignoring case" in {
+        val usernameQuery = query.copy(
+          filters = Vector(
+            TextFilter(UsernameField, Operator.EQUALS, "ADMIN")
+          )
+        )
+        val matchingUser = user.copy(name = Username("Admin"))
+        UserSearchPredicate(usernameQuery)(matchingUser) must beTrue
+      }
+
     }
 
     "return true for verified user" in {
