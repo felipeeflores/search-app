@@ -13,8 +13,8 @@ The application is composed of the following modules (as shown in picture above)
  - **Model**: Data structures modelling the entities for the domain of this search app.
  - **Feeder**: holds all components related to feeding a search index with data. Traditional items for extracting,
    transforming and loading the data live here.
- - **SearchIndex**: Referred simply as "Index". This module holds components that concerned with the definition of the
-   different search indices for this application, their structure and that of their documents and their management.
+ - **SearchIndex**: Referred simply as "Index". This module holds components that are concerned with the definition of
+   the different search indices for this application, their structure, that of their documents and their management.
  - **Search API**: Holds all the components in charge of performing searches against the search indices. Elements such
    as query parsing, search query definition and search execution exist here.
  - **Client**: Simple console/command line search client.
@@ -57,8 +57,8 @@ and because it allows a document (value) been recognised by its id (key).
 
 #### Other Search Index considerations
 
-Given the completely different structure of the different entities a decision has been made to have each of them live
-within its own index.
+Given the divergent structure of the different entities a decision has been made to have each of them live within its
+own index.
 
 As a consequence, there is the need to make an extra call per record to bring across the related data from one entity
 to the other per search result. A possible mitigation/workaround for this is the creation of a third index holding 
@@ -67,17 +67,19 @@ has been discarded to favour simplicity and reduced development time.
 
 ## Programming Principles and Choices
 
-- Use the [cats](https://typelevel.org/cats/) library for functional constructs and data types.
-- Use [cats-effect](https://typelevel.org/cats-effect/) library for managing effects and execution.
-- Use [fs2](https://fs2.io/#/) for feeding data as streams for high performance and low resource consumption.
-- Prefer immutability (with the exception of search index being mutable, as explained in the previous section)
-- Prefer the tagless final encoding for adopting the principle of least knowledge/power.
-- Use dependencies as functions: that is, DI is implemented by defining/passing dependencies as functions.
-- Use the type system as much as possible to prevent invalid states or incorrect values been passed around (ADTs,
-  newtypes and the like are used everywhere).
-- Use an ADT to represent application errors.
-- Use parser combinators for query parsing.
-- Use cats `Show` typeclass to represent data types as Strings to print in the client console.
+ - Use the [cats](https://typelevel.org/cats/) library for functional constructs and data types.
+ - Use [cats-effect](https://typelevel.org/cats-effect/) library for managing effects and execution.
+ - Use [fs2](https://fs2.io/#/) for feeding data as streams for high performance and low resource consumption.
+ - Prefer immutability (with the exception of search index being mutable, as explained in the previous section)
+ - Prefer the tagless final encoding for adopting the principle of least knowledge/power.
+ - Use dependencies as functions: that is, DI is implemented by defining/passing dependencies as functions (checked at
+   compile time).
+ - Use the type system as much as possible to prevent invalid states or incorrect values been passed around (ADTs,
+   newtypes and the like are used everywhere).
+ - Use an ADT to represent application errors.
+ - Use [circe](https://circe.github.io/circe/) as json decoding library.
+ - Use parser combinators for query parsing. See [atto](https://tpolecat.github.io/atto/) library
+ - Use cats `Show` typeclass to represent data types as Strings to print in the client console.
 
 ## Requirements
 
@@ -92,7 +94,7 @@ sbt run
 
 ### Running queries
 
-Console application is simple and search query can sometimes been misinterpreted or misread by the enviorment. However, it
+Console application is simple and search query can sometimes be misinterpreted or misread by the environment. However, it
 is perfectly functional. To run a search simply enter a query according to the DSL described above or type `help` for
 some usage documentation and query samples.
 
@@ -117,7 +119,7 @@ arbitrary limit) by running:
 MAX_SEARCH_RESULTS=10 sbt run
 ```
 
-The index data is loaded at startup from the folder `data`. Custom source files can be indicated by pointing to their
+The index data is loaded at startup from the `data` folder. Custom source files can be indicated by pointing to their
 full path by using the environment variables `USERS_JSON` and `TICKETS_JSON`:
 
 ```
@@ -131,7 +133,9 @@ Finally, to exit just press `Ctrl+C`.
 - The test `IndexManagerSpec` has been seen failing once. No repoduction has been possible and no more time has been
   available for further investigation.
 - tags filter is currently not supported, nor the values in operator `[]`.
-- no ability to scroll trough past queries
+- no ability to scroll trough past queries.
+- Query Filters can be improved by enforcing their search target. This however has not been implemented due to time
+  restrictions.
 
 ## Final Words
 
