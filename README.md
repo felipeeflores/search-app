@@ -138,7 +138,7 @@ Finally, to exit just press `Ctrl+C`.
 ## Limitations and known issues
 
  - The test `IndexManagerSpec` has been seen failing once. No repoduction has been possible and no more time has been
-   available for further investigation (a 50 millisecond delay has been as a workaround before checking indexing result).
+   available for further investigation (a 50 millisecond delay has been added as a workaround before checking indexing result).
  - tags filter is currently not supported, nor the values in operator `[]`.
  - searching for date fields is not currently supported.
  - no ability to scroll trough past queries.
